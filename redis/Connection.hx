@@ -47,6 +47,28 @@ class Connection {
 		}
 	}
 
+	static var REG = ~/^redis:\/\/([a-zA-Z0-9.-]+)(:([0-9]+))?\/?([0-9]*)/i;
+	public static function connectParams( str : String ) : {host: String, port: Int, db: Int } {
+		if( str == null || !REG.match(str) )
+			throw "Bad redis connect string format";
+
+		var sPort = REG.matched(3);
+		var db = Std.parseInt(REG.matched(4));
+		return {
+			host: REG.matched(1),
+			port: ( sPort != null && sPort != "" ) ? Std.parseInt(sPort) : 6379,
+			db: db==null ? 0 : db,
+		};
+	}
+
+	public static function connect( str : String ){
+		var conf = connectParams( str );
+		var cnx = new Connection( conf.host, conf.port );
+		if( conf.db != 0 )
+			cnx.select( conf.db );
+		return cnx;
+	}
+
 	var sock : sys.net.Socket;
 	public var host(default,null) : String;
 	public var port(default,null) : Int;
