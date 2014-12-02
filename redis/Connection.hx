@@ -227,6 +227,10 @@ class Connection {
 		return int(command("STRLEN",[key]));
 	}
 
+	public function incr( key : String ){
+		return int(command("INCR",[key]));
+	}
+
 	//
 	
 	public function lpush( key : String, values : Array<String> ){
